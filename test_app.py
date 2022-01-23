@@ -85,6 +85,59 @@ class CastingAgencyTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
 
+    def test_patch_actor(self):
+        # insert a test actor
+        test_actor = Actor(
+            name="Dummy",
+            gender="Male",
+            age=25
+        )
+
+        test_actor.insert()
+
+        test_actor_id = Actor.query.filter(Actor.name == test_actor.name).one_or_none().id
+
+        updated_actor_body = {
+            "name": "New Dummy",
+            "age": 40
+        }
+
+        test_uri = "/actors/{}".format(test_actor_id)
+
+        res = self.client().patch(test_uri, json=updated_actor_body)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["actor"]["name"], "New Dummy")
+        self.assertEqual(data["actor"]["age"], 40)
+
+        test_actor.delete()
+
+    def test_patch_movie(self):
+        # insert a test movie
+        test_movie = Movie(
+            title="Dummy",
+            release_date=datetime.datetime(2000, 1, 1)
+        )
+
+        test_movie.insert()
+
+        test_movie_id = Movie.query.filter(Movie.title == test_movie.title).one_or_none().id
+
+        updated_movie_body = {
+            "title": "New Dummy",
+            "release_date": "2022-01-15"
+        }
+
+        test_uri = "/movies/{}".format(test_movie_id)
+
+        res = self.client().patch(test_uri, json=updated_movie_body)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["movie"]["title"], "New Dummy")
+        self.assertEqual(data["movie"]["release_date"], "Sat, 15 Jan 2022 00:00:00 GMT")
+
     def test_post_actor(self):
         test_actor_body = {
             "name": "Dummy",

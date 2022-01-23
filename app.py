@@ -41,6 +41,30 @@ def create_app(test_config=None):
 
   @app.route('/actors', methods=['GET'])
   def get_actors():
+    """
+    Endpoint
+    GET /actors
+    - requires the '' permission
+    - returns the actor.format() data representation
+
+    Returns status code 200 and json {"success": True, "actors": formatted_actors} 
+    where formatted_actors is the list of actors or appropriate status code 
+    indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    
+    Returns
+    -------
+    json object with the keys:
+    
+    success:
+      Whether the request is successful
+    actors:
+      The actor.format() data representation of the actors
+    """
     actors = Actor.query.order_by(Actor.id).all()
     formatted_actors = [actor.format() for actor in actors]
     
@@ -56,6 +80,30 @@ def create_app(test_config=None):
 
   @app.route('/movies', methods=['GET'])
   def get_movies():
+    """
+    Endpoint
+    GET /movies
+    - requires the '' permission
+    - returns the movie.format() data representation
+
+    Returns status code 200 and json {"success": True, "movies": formatted_movies} 
+    where formatted_movies is the list of movies or appropriate status code 
+    indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    
+    Returns
+    -------
+    json object with the keys:
+    
+    success:
+      Whether the request is successful
+    movies:
+      The movie.format() data representation of the movies
+    """
     movies = Movie.query.order_by(Movie.id).all()
     formatted_movies = [movie.format() for movie in movies]
     
@@ -71,6 +119,33 @@ def create_app(test_config=None):
 
   @app.route('/actors/<id>', methods=['DELETE'])
   def delete_actor(id):
+    """
+    Endpoint
+    DELETE /actors/<id>
+    - <id> is the existing model id
+    - respond with a 404 error if <id> is not found
+    - delete the corresponding row for <id>
+    - require the '' permission
+    
+    Returns status code 200 and json {"success": True, "actorID": id} 
+    where id is the id of the deleted record or appropriate status 
+    code indicating reason for failure.
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    id:
+      The actor id
+    
+    Returns
+    -------
+    json object with the keys
+    
+    success:
+      Whether the request is successful
+    actorID:
+      ID of the deleted actor
+    """
     actor = Actor.query.filter(Actor.id == id).one_or_none()
 
     if actor is None:
@@ -91,6 +166,33 @@ def create_app(test_config=None):
 
   @app.route('/movies/<id>', methods=['DELETE'])
   def delete_movie(id):
+    """
+    Endpoint
+    DELETE /movies/<id>
+    - <id> is the existing model id
+    - respond with a 404 error if <id> is not found
+    - delete the corresponding row for <id>
+    - require the '' permission
+    
+    Returns status code 200 and json {"success": True, "movieID": id} 
+    where id is the id of the deleted record or appropriate status 
+    code indicating reason for failure.
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    id:
+      The movie id
+    
+    Returns
+    -------
+    json object with the keys
+    
+    success:
+      Whether the request is successful
+    movieID:
+      ID of the deleted movie
+    """
     movie = Movie.query.filter(Movie.id == id).one_or_none()
 
     if movie is None:
@@ -111,17 +213,56 @@ def create_app(test_config=None):
 
   @app.route('/actors/<id>', methods=['PATCH'])
   def patch_actor(id):
+    """
+    Endpoint
+    PATCH /actors/<id>
+    - where <id> is the existing model id
+    - respond with a 404 error if <id> is not found
+    - respond with a 400 error if request body is missing 'name' and 'gender' and 'age'
+    - update the corresponding row for <id>
+    - require the '' permission
+    - returns the actor.format() data representation
+    
+    Returns status code 200 and json {"success": True, "actor": actor} 
+    where actor is a json containing only the updated actor or 
+    appropriate status code indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    id:
+      The actor id
+    
+    Returns
+    -------
+    json object with the keys
+    
+    success:
+      Whether the request is successful
+    drinks:
+      The actor.format() data representation of the updated actor
+    """
     body = request.get_json()
 
-    if ("name" in body) and ("gender" in body) and ("age" in body):
-      updated_name = body["name"]
-      updated_gender = body["gender"]
-      updated_age = body["age"]
-    else:
+    updated_name = None
+    updated_gender = None
+    updated_age = None
+
+    if ("name" not in body) and ("gender" not in body) and ("age" not in body):
       abort(400)
+    else:
+      if "name" in body:
+        updated_name = body["name"]
+      if "gender" in body:
+        updated_gender = body["gender"]
+      if "age" in body:
+        updated_age = body["age"]
 
     try:
         actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor is None:
+          abort(404)
         if updated_name:
             actor.name = updated_name
         if updated_gender:
@@ -131,8 +272,8 @@ def create_app(test_config=None):
         actor.update()
         return jsonify(
             {
-                'success': True,
-                'actor': actor.format()
+              'success': True,
+              'actor': actor.format()
             }
         )
     except:
@@ -141,10 +282,95 @@ def create_app(test_config=None):
 
   @app.route('/movies/<id>', methods=['PATCH'])
   def patch_movie(id):
-    pass
+    """
+    Endpoint
+    PATCH /movies/<id>
+    - where <id> is the existing model id
+    - respond with a 404 error if <id> is not found
+    - respond with a 400 error if request body is missing 'title' and 'release_date'
+    - update the corresponding row for <id>
+    - require the '' permission
+    - returns the movie.format() data representation
+    
+    Returns status code 200 and json {"success": True, "movie": movie} 
+    where movie is a json containing only the updated movie or 
+    appropriate status code indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    id:
+      The movie id
+    
+    Returns
+    -------
+    json object with the keys
+    
+    success:
+      Whether the request is successful
+    drinks:
+      The movie.format() data representation of the updated movie
+    """
+    body = request.get_json()
+
+    updated_title = None
+    updated_release_date = None
+
+    if ("title" not in body) and ("release_date" not in body):
+      abort(400)
+    else:
+      if "title" in body:
+        updated_title = body["title"]
+      if "release_date" in body:
+        updated_release_date = body["release_date"]
+
+    try:
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if updated_title:
+            movie.title = updated_title
+        if updated_release_date:
+            movie.release_date = updated_release_date
+        movie.update()
+        return jsonify(
+            {
+              'success': True,
+              'movie': movie.format()
+            }
+        )
+    except:
+        print(sys.exc_info())
+        abort(422)
 
   @app.route('/actors', methods=['POST'])
   def post_actor():
+    """
+    Endpoint
+    POST /actors
+    - create a new row in the Actor table
+    - request body must contain at least one of 'name' and 'gender' and 'age'
+    - respond with a 400 error if request body does not contain 'name' and 'gender' and 'age'
+    - require the '' permission
+    - returns the actor.format() data representation
+    
+    Returns status code 200 and json {"success": True, "actor": new_actor} 
+    where new_actor is a json containing only the newly created actor
+    or appropriate status code indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    
+    Returns
+    -------
+    json object with the keys:
+    
+    success:
+      Whether the request is successful
+    actor:
+      The actor.format() data representation of the new actor
+    """
     body = request.get_json()
 
     if ("name" in body) and ("gender" in body) and ("age" in body):
@@ -170,6 +396,33 @@ def create_app(test_config=None):
 
   @app.route('/movies', methods=['POST'])
   def post_movie():
+    """
+    Endpoint
+    POST /movies
+    - create a new row in the Movie table
+    - request body must contain at least one of 'title' and 'release_date'
+    - respond with a 400 error if request body does not contain 'title' and 'release_date'
+    - require the '' permission
+    - returns the movie.format() data representation
+    
+    Returns status code 200 and json {"success": True, "movie": new_movie} 
+    where new_movie is a json containing only the newly created movie
+    or appropriate status code indicating reason for failure.
+
+    Parameters
+    ----------
+    jwt:
+      JSON Web token
+    
+    Returns
+    -------
+    json object with the keys:
+    
+    success:
+      Whether the request is successful
+    drink:
+      The movie.format() data representation of the new movie
+    """
     body = request.get_json()
 
     if ("title" in body) and ("release_date" in body):
