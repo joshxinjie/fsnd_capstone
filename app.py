@@ -4,6 +4,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+from auth import AuthError, requires_auth
 from models import setup_db, Movie, Actor, db_drop_and_create_all, db_init_sample_records
 from config import DEPLOYMENT, LOCAL_SQLALCHEMY_DATABASE_URI, HEROKU_SQLALCHEMY_DATABASE_URI
 
@@ -40,7 +41,8 @@ def create_app(test_config=None):
     return response
 
   @app.route('/actors', methods=['GET'])
-  def get_actors():
+  @requires_auth('get:actors')
+  def get_actors(jwt):
     """
     Endpoint
     GET /actors
@@ -79,7 +81,8 @@ def create_app(test_config=None):
     )
 
   @app.route('/movies', methods=['GET'])
-  def get_movies():
+  @requires_auth('get:movies')
+  def get_movies(jwt):
     """
     Endpoint
     GET /movies
@@ -118,7 +121,8 @@ def create_app(test_config=None):
     )
 
   @app.route('/actors/<id>', methods=['DELETE'])
-  def delete_actor(id):
+  @requires_auth('delete:actors')
+  def delete_actor(jwt, id):
     """
     Endpoint
     DELETE /actors/<id>
@@ -165,7 +169,8 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/movies/<id>', methods=['DELETE'])
-  def delete_movie(id):
+  @requires_auth('delete:movies')
+  def delete_movie(jwt, id):
     """
     Endpoint
     DELETE /movies/<id>
@@ -212,7 +217,8 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/actors/<id>', methods=['PATCH'])
-  def patch_actor(id):
+  @requires_auth('patch:actors')
+  def patch_actor(jwt, id):
     """
     Endpoint
     PATCH /actors/<id>
@@ -281,7 +287,8 @@ def create_app(test_config=None):
         abort(422)
 
   @app.route('/movies/<id>', methods=['PATCH'])
-  def patch_movie(id):
+  @requires_auth('patch:movies')
+  def patch_movie(jwt, id):
     """
     Endpoint
     PATCH /movies/<id>
@@ -343,7 +350,8 @@ def create_app(test_config=None):
         abort(422)
 
   @app.route('/actors', methods=['POST'])
-  def post_actor():
+  @requires_auth('post:actors')
+  def post_actor(jwt):
     """
     Endpoint
     POST /actors
@@ -395,7 +403,8 @@ def create_app(test_config=None):
     
 
   @app.route('/movies', methods=['POST'])
-  def post_movie():
+  @requires_auth('post:movies')
+  def post_movie(jwt):
     """
     Endpoint
     POST /movies

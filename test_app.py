@@ -7,7 +7,19 @@ from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
 from models import setup_db, Movie, Actor
-from config import DEPLOYMENT, LOCAL_SQLALCHEMY_DATABASE_URI, HEROKU_SQLALCHEMY_DATABASE_URI
+from config import DEPLOYMENT, LOCAL_SQLALCHEMY_DATABASE_URI, HEROKU_SQLALCHEMY_DATABASE_URI, CASTING_ASSISTANT_TOKEN, CASTING_DIRECTOR_TOKEN, EXECUTIVE_PRODUCER_TOKEN
+
+CASTING_ASSISTANT_AUTH_HEADER = {
+    'Authorization': CASTING_ASSISTANT_TOKEN
+}
+
+CASTING_DIRECTOR_AUTH_HEADER = {
+    'Authorization': CASTING_DIRECTOR_TOKEN
+}
+
+EXECUTIVE_PRODUCER_AUTH_HEADER = {
+    'Authorization': EXECUTIVE_PRODUCER_TOKEN
+}
 
 class CastingAgencyTestCase(unittest.TestCase):
     """
@@ -32,21 +44,61 @@ class CastingAgencyTestCase(unittest.TestCase):
             # create all tables
             self.db.create_all()
     
-    def test_retrieve_actors(self):
-        res = self.client().get("/actors")
+    def test_retrieve_actors_casting_assistant(self):
+        res = self.client().get("/actors", headers = CASTING_ASSISTANT_AUTH_HEADER)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data["actors"])
 
-    def test_retrieve_movies(self):
-        res = self.client().get("/movies")
+    def test_retrieve_movies_casting_assistant(self):
+        res = self.client().get("/movies", headers = CASTING_ASSISTANT_AUTH_HEADER)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data["movies"])
 
-    def test_delete_actor(self):
+    def test_retrieve_actors_casting_director(self):
+        res = self.client().get("/actors", headers = CASTING_DIRECTOR_AUTH_HEADER)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["actors"])
+
+    def test_retrieve_movies_casting_director(self):
+        res = self.client().get("/movies", headers = CASTING_DIRECTOR_AUTH_HEADER)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["movies"])
+
+    def test_retrieve_actors_executive_producer(self):
+        res = self.client().get("/actors", headers = EXECUTIVE_PRODUCER_AUTH_HEADER)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["actors"])
+
+    def test_retrieve_movies_executive_producer(self):
+        res = self.client().get("/movies", headers = CASTING_DIRECTOR_AUTH_HEADER)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["movies"])
+
+    # def test_retrieve_actors_no_authorization(self):
+    #     res = self.client().get("/actors")
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 401)
+
+    # def test_retrieve_movies_no_authorization(self):
+    #     res = self.client().get("/movies")
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 401)
+
+    def test_delete_actor_casting_director(self):
         # insert a test actor
         test_actor = Actor(
             name="Dummy",
@@ -60,13 +112,14 @@ class CastingAgencyTestCase(unittest.TestCase):
 
         # delete question
         res = self.client().delete(
-            "/actors/{}".format(test_actor_id)
+            "/actors/{}".format(test_actor_id),
+            headers = CASTING_DIRECTOR_AUTH_HEADER
         )
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
 
-    def test_delete_movie(self):
+    def test_delete_movie_executive_producer(self):
         # insert a test movie
         test_movie = Movie(
             title="Dummy",
@@ -79,13 +132,14 @@ class CastingAgencyTestCase(unittest.TestCase):
 
         # delete question
         res = self.client().delete(
-            "/movies/{}".format(test_movie_id)
+            "/movies/{}".format(test_movie_id),
+            headers = EXECUTIVE_PRODUCER_AUTH_HEADER
         )
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
 
-    def test_patch_actor(self):
+    def test_patch_actor_casting_director(self):
         # insert a test actor
         test_actor = Actor(
             name="Dummy",
@@ -104,7 +158,7 @@ class CastingAgencyTestCase(unittest.TestCase):
 
         test_uri = "/actors/{}".format(test_actor_id)
 
-        res = self.client().patch(test_uri, json=updated_actor_body)
+        res = self.client().patch(test_uri, json=updated_actor_body, headers = CASTING_DIRECTOR_AUTH_HEADER)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -113,7 +167,35 @@ class CastingAgencyTestCase(unittest.TestCase):
 
         test_actor.delete()
 
-    def test_patch_movie(self):
+    def test_patch_actor_executive_producer(self):
+        # insert a test actor
+        test_actor = Actor(
+            name="Dummy",
+            gender="Male",
+            age=25
+        )
+
+        test_actor.insert()
+
+        test_actor_id = Actor.query.filter(Actor.name == test_actor.name).one_or_none().id
+
+        updated_actor_body = {
+            "name": "New Dummy",
+            "age": 40
+        }
+
+        test_uri = "/actors/{}".format(test_actor_id)
+
+        res = self.client().patch(test_uri, json=updated_actor_body, headers = EXECUTIVE_PRODUCER_AUTH_HEADER)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["actor"]["name"], "New Dummy")
+        self.assertEqual(data["actor"]["age"], 40)
+
+        test_actor.delete()
+
+    def test_patch_movie_casting_director(self):
         # insert a test movie
         test_movie = Movie(
             title="Dummy",
@@ -131,20 +213,45 @@ class CastingAgencyTestCase(unittest.TestCase):
 
         test_uri = "/movies/{}".format(test_movie_id)
 
-        res = self.client().patch(test_uri, json=updated_movie_body)
+        res = self.client().patch(test_uri, json=updated_movie_body, headers = CASTING_DIRECTOR_AUTH_HEADER)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertEqual(data["movie"]["title"], "New Dummy")
         self.assertEqual(data["movie"]["release_date"], "Sat, 15 Jan 2022 00:00:00 GMT")
 
-    def test_post_actor(self):
+    def test_patch_movie_executive_producer(self):
+        # insert a test movie
+        test_movie = Movie(
+            title="Dummy",
+            release_date=datetime.datetime(2000, 1, 1)
+        )
+
+        test_movie.insert()
+
+        test_movie_id = Movie.query.filter(Movie.title == test_movie.title).one_or_none().id
+
+        updated_movie_body = {
+            "title": "New Dummy",
+            "release_date": "2022-01-15"
+        }
+
+        test_uri = "/movies/{}".format(test_movie_id)
+
+        res = self.client().patch(test_uri, json=updated_movie_body, headers = EXECUTIVE_PRODUCER_AUTH_HEADER)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["movie"]["title"], "New Dummy")
+        self.assertEqual(data["movie"]["release_date"], "Sat, 15 Jan 2022 00:00:00 GMT")
+
+    def test_post_actor_casting_director(self):
         test_actor_body = {
             "name": "Dummy",
             "age": 30,
             "gender": "Male"
         }
-        res = self.client().post("/actors", json=test_actor_body)
+        res = self.client().post("/actors", json=test_actor_body, headers = CASTING_DIRECTOR_AUTH_HEADER)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -154,12 +261,28 @@ class CastingAgencyTestCase(unittest.TestCase):
         test_actor = Actor.query.filter(Actor.id == test_actor_id).one_or_none()
         test_actor.delete()
 
-    def test_post_movie(self):
+    def test_post_actor_executive_producer(self):
+        test_actor_body = {
+            "name": "Dummy",
+            "age": 30,
+            "gender": "Male"
+        }
+        res = self.client().post("/actors", json=test_actor_body, headers = EXECUTIVE_PRODUCER_AUTH_HEADER)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+
+        test_actor_id = data["actor"]["id"]
+        self.assertTrue(test_actor_id)
+        test_actor = Actor.query.filter(Actor.id == test_actor_id).one_or_none()
+        test_actor.delete()
+
+    def test_post_movie_executive_producer(self):
         test_movie_body = {
             "title": "Dummy",
             "release_date": "2022-01-15"
         }
-        res = self.client().post("/movies", json=test_movie_body)
+        res = self.client().post("/movies", json=test_movie_body, headers = EXECUTIVE_PRODUCER_AUTH_HEADER)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
