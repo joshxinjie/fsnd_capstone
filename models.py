@@ -12,7 +12,6 @@ def setup_db(app, database_uri):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    # db.drop_all()
     db.create_all()
     migrate = Migrate(app, db)
 
@@ -107,10 +106,19 @@ def db_init_sample_records():
             age=25
         )
 
-        movie_1.insert()
-        movie_2.insert()
-        actor_1.insert()
-        actor_2.insert()
+        movie_1_in_db_check = Movie.query.filter(Movie.title == movie_1.title).one_or_none()
+        movie_2_in_db_check = Movie.query.filter(Movie.title == movie_2.title).one_or_none()
+        actor_1_in_db_check = Actor.query.filter(Actor.name == actor_1.title).one_or_none()
+        actor_2_in_db_check = Actor.query.filter(Actor.title == actor_2.title).one_or_none()
+
+        if movie_1_in_db_check is None:
+            movie_1.insert()
+        if movie_2_in_db_check is None:
+            movie_2.insert()
+        if actor_1_in_db_check is None:
+            actor_1.insert()
+        if actor_2_in_db_check is None:
+            actor_2.insert()
     except:
         error = True
         db.session.rollback()
