@@ -85,6 +85,14 @@ EXECUTIVE_PRODUCER_TOKEN="Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Imh
 ```
 
 ### 2. Run the tests
+
+Set the `DEPLOYMENT` in `config.py` to `"local"`:
+```
+# local or heroku
+DEPLOYMENT="local"
+```
+
+Run the unit tests:
 ```
 python -m test_app
 ```
