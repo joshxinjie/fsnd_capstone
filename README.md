@@ -188,7 +188,7 @@ git push heroku main:master
 
 5. Virtual Environment (If necessary)
 
-Create and activate the virtual environment if this step has not been performed.
+Create and activate the virtual environment locally if this step has not been performed.
 
 ```
 python3 -m virtualenv fsndcapstone
@@ -198,7 +198,7 @@ pip install -r requirements.txt
 
 6. Export the DATABASE_URL:
 ```
-export DATABASE_URL=
+export DATABASE_URL=postgres://focudljubvikoc:58c505f1eb03c923464800a25a01211d7a352c026eaa6fbea27348383976bb9b@ec2-50-19-32-96.compute-1.amazonaws.com:5432/d2b7s41ijh0mbb
 ```
 
 7. Initialise migrations locally (If necessary):

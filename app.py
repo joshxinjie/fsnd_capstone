@@ -40,6 +40,11 @@ def create_app(test_config=None):
     )
     return response
 
+  @app.route('/')
+  def main_page():
+    message="Welcome!"
+    return message
+
   @app.route('/actors', methods=['GET'])
   @requires_auth('get:actors')
   def get_actors(jwt):
