@@ -472,7 +472,7 @@ We will use the environment variable `BEARER_TOKEN` for all endpoint examples. Y
     - `gender` String
 - Sample:
   - `curl --header "Authorization: $BEARER_TOKEN" https://fsnd-capstone-xj.herokuapp.com/actors/11 -X PATCH -H "Content-Type: application/json" -d '{"name": "Updated Name", "age":40}'`
-    - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/actors/11 -X PATCH -H "Content-Type: application/json" -d '{"name": "Updated Name", "age":40}'`
+  - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/actors/11 -X PATCH -H "Content-Type: application/json" -d '{"name": "Updated Name", "age":40}'`
 
 ```
 {
@@ -497,7 +497,7 @@ We will use the environment variable `BEARER_TOKEN` for all endpoint examples. Y
     - `release_date` Datetime
 - Sample:
   - `curl --header "Authorization: $BEARER_TOKEN" https://fsnd-capstone-xj.herokuapp.com/movies/11 -X PATCH -H "Content-Type: application/json" -d '{"title": "Updated Title", "release_date":"2022-01-15"}'`
-    - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/movies/11 -X PATCH -H "Content-Type: application/json" -d '{"title": "Updated Title", "release_date":"2022-01-15"}'`
+  - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/movies/11 -X PATCH -H "Content-Type: application/json" -d '{"title": "Updated Title", "release_date":"2022-01-15"}'`
 
 ```
 {
@@ -521,7 +521,7 @@ We will use the environment variable `BEARER_TOKEN` for all endpoint examples. Y
     - `gender` String
 - Sample:
   - `curl --header "Authorization: $BEARER_TOKEN" https://fsnd-capstone-xj.herokuapp.com/actors -X POST -H "Content-Type: application/json" -d '{"name": "New Name", "age":40, "gender":"Male"}'`
-    - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/actors -X POST -H "Content-Type: application/json" -d '{"name": "New Name", "age":40, "gender":"Male"}'`
+  - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/actors -X POST -H "Content-Type: application/json" -d '{"name": "New Name", "age":40, "gender":"Male"}'`
 
 ```
 {
@@ -545,7 +545,7 @@ We will use the environment variable `BEARER_TOKEN` for all endpoint examples. Y
     - `release_date` Datetime
 - Sample:
   - `curl --header "Authorization: $BEARER_TOKEN" https://fsnd-capstone-xj.herokuapp.com/movies -X POST -H "Content-Type: application/json" -d '{"title": "New Title", "release_date":"2022-01-15"}'`
-    - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/movies -X POST -H "Content-Type: application/json" -d '{"title": "New Title", "release_date":"2022-01-15"}'`
+  - `curl --header "Authorization: $BEARER_TOKEN" http://127.0.0.1:8080/movies -X POST -H "Content-Type: application/json" -d '{"title": "New Title", "release_date":"2022-01-15"}'`
 
 ```
 {

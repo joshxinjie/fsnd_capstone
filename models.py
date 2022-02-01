@@ -108,8 +108,8 @@ def db_init_sample_records():
 
         movie_1_in_db_check = Movie.query.filter(Movie.title == movie_1.title).one_or_none()
         movie_2_in_db_check = Movie.query.filter(Movie.title == movie_2.title).one_or_none()
-        actor_1_in_db_check = Actor.query.filter(Actor.name == actor_1.title).one_or_none()
-        actor_2_in_db_check = Actor.query.filter(Actor.title == actor_2.title).one_or_none()
+        actor_1_in_db_check = Actor.query.filter(Actor.name == actor_1.name).one_or_none()
+        actor_2_in_db_check = Actor.query.filter(Actor.name == actor_2.name).one_or_none()
 
         if movie_1_in_db_check is None:
             movie_1.insert()

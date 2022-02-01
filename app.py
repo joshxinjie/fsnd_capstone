@@ -24,7 +24,7 @@ def create_app(test_config=None):
     database_uri=database_uri
   )
 
-  # db_drop_and_create_all()
+  db_drop_and_create_all()
   db_init_sample_records()
 
   CORS(app, resources={r"/api/*": {"origins": "*"}})
